@@ -1,13 +1,27 @@
-import React from 'react';
-import Header from '../components/Header';
-import GlobalStyle from '../styles/global-style';
+import React, { useState, useEffect } from "react";
+import Header from "../components/Header";
+import PageTransitions from "../components/PageTransitions";
+import GlobalStyle from "../styles/global-style";
+import { useRouter } from "next/router";
 
 const MyApp = ({ Component, pageProps }) => {
-  
+  const router = useRouter();
+  const [routingPageOffset, setRoutingPageOffset] = useState(0);
+  useEffect(() => {
+    const pageChange = () => {
+      setRoutingPageOffset(window.scrollY);
+    };
+    router.events.on("routeChangeStart", pageChange);
+  }, [router.events]);
   return (
     <>
       <Header />
-      <Component  {...pageProps} />
+      <PageTransitions
+        route={router.asPath}
+        routingPageOffset={routingPageOffset}
+      >
+        <Component {...pageProps} />
+      </PageTransitions>
       <GlobalStyle />
       <style jsx global>{`
         html,
@@ -26,7 +40,5 @@ const MyApp = ({ Component, pageProps }) => {
     </>
   );
 };
-
-
 
 export default MyApp;
